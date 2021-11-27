@@ -4,13 +4,14 @@
 
     // Create Dino Constructor
 
-    function Dino(species, weight, diet, where, when, fact) {
-        this.species = species,
-        this.weight = weight,
-        this.diet = diet,
-        this.where = where,
-        this.when = when,
-        this.fact = fact
+    function Dino(species, weight, height, diet, where, when, fact) {
+        this.species = species;
+        this.weight = weight;
+        this.height = height;
+        this.diet = diet;
+        this.where = where;
+        this.when = when;
+        this.fact = fact;
     }
 
     // Create Dino Objects
@@ -18,22 +19,52 @@
     let dinos = []
 
     dinosData.Dinos.forEach( dino => {
-        dinos.push(new Dino(...Object.values(dino)));
+        dinos.push( new Dino( ...Object.values( dino ) ) );
     });
 
     // Create Human Object
 
-    function Human(weight, diet, where, fact) {
-        this.species = 'human',
-        this.weight = weight,
-        this.diet = diet,
-        this.where = where,
-        this.when = 'current',
-        this.fact = fact
+    function Human(name, height, weight, diet) {
+        this.species = 'human';
+        this.name = name;
+        this.height = parseInt( height, 10 );
+        this.weight = parseInt( weight, 10 );
+        this.diet = diet;
+        this.when = 'current';
+        this.where = null;
+        this.fact = null;
     }
     
     // Use IIFE to get human data from form
 
+    const form = document.getElementById('dino-compare');
+
+    let humans = []
+
+    const onFormSubmit = function (event){
+        event.preventDefault();
+
+        const humanForm = new FormData(event.target);
+
+        let humanEntry = {};
+        humanForm.forEach(function(value, key){
+            humanEntry[key] = value;
+        });
+
+        let humanHeight = ( parseInt( humanEntry.feet, 10)  * 12 ) + parseInt( humanEntry.inches, 10 );
+
+        let humanObject = new Human( 
+            humanEntry.name, 
+            humanHeight, 
+            humanEntry.weight, 
+            humanEntry.diet 
+        )
+        
+        humans.push( humanObject );
+        
+    };
+    
+    form.addEventListener('submit', onFormSubmit)
 
     // Create Dino Compare Method 1
     // NOTE: Weight in JSON file is in lbs, height in inches. 
