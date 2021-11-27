@@ -22,6 +22,51 @@
         dinos.push( new Dino( ...Object.values( dino ) ) );
     });
 
+    // Create random selection of Dino objects
+
+    function getRandomInt( min, max ) {
+        min = Math.ceil( min );
+        max = Math.floor( max );
+        return Math.floor( Math.random() * ( max - min ) + min);
+    }
+
+    function getPigeon( dinos ) {
+        let cloneDinos = [...dinos];
+
+        for ( let step = 0; step < cloneDinos.length; step++ ) {
+            let dino = cloneDinos[step];
+
+            if( dino.species == "Pigeon") {
+                var pigeon = dino;
+
+                cloneDinos.splice( step, 1 );
+
+                break;
+            }
+        }
+
+        return { 
+            dinos: cloneDinos, 
+            pigeon: pigeon 
+        };
+    }
+
+    function getRandomUniqueDinos( dinos, quantity ) {
+        let selectedDinos = [];
+
+        let cloneDinos = [...dinos]; 
+
+        for (let step = 0; step < quantity; step++) {
+            let dinoIndex = getRandomInt( 0, cloneDinos.length ); 
+
+            selectedDinos.push( cloneDinos[dinoIndex] );
+
+            cloneDinos.splice( dinoIndex, 1 );
+        }
+
+        return selectedDinos;
+    };
+
     // Create Human Object
 
     function Human(name, height, weight, diet) {
@@ -30,7 +75,7 @@
         this.height = parseInt( height, 10 );
         this.weight = parseInt( weight, 10 );
         this.diet = diet;
-        this.when = 'current';
+        this.when = 'Holocene';
         this.where = null;
         this.fact = null;
     }
@@ -61,21 +106,67 @@
         )
         
         humans.push( humanObject );
+
+        const pigeonData = getPigeon( dinos );
+
+        getHighestHeight( dinos, pigeonData.pigeon, humanObject );
+
+        console.log(pigeonData);
+
+        console.log( getRandomUniqueDinos( pigeonData.dinos, 7 ));
         
     };
     
     form.addEventListener('submit', onFormSubmit)
 
-    // Create Dino Compare Method 1
-    // NOTE: Weight in JSON file is in lbs, height in inches. 
+    // Create Dino Compare Method - Weight
+    function getHighestWeight( dinos, pigeon, human ) {
+        let highestWeight = pigeon;
 
-    
-    // Create Dino Compare Method 2
-    // NOTE: Weight in JSON file is in lbs, height in inches.
+        if( human.weight > highestWeight.weight ) {
+            highestWeight = human;
+        }
+        
+        dinos.forEach( ( dino ) => {
+            if( dino.weight > highestWeight.weight) {
+                highestWeight = dino;
+            }
+        } ) 
 
+        return highestWeight;
+    };
     
-    // Create Dino Compare Method 3
-    // NOTE: Weight in JSON file is in lbs, height in inches.
+    // Create Dino Compare Method - Height
+    function getHighestHeight( dinos, pigeon, human ) {
+        let highestHeight = pigeon;
+
+        if( human.height > highestHeight.height ) {
+            highestHeight = human;
+        }
+        
+        dinos.forEach( ( dino ) => {
+            if( dino.height > highestHeight.height) {
+                highestHeight = dino;
+            }
+        } ) 
+
+        console.log(highestHeight);
+
+        return highestHeight;
+    };
+
+    // Create Dino Compare Method - Time Period
+    function compareTimePeriods( dino ) {
+        const timePeriods = [
+            "Holocene",
+            "Late Cretaceous",
+            "Late Jurasic to Early Cretaceous",
+            "Late Jurasic"
+        ];
+
+
+
+    }
 
 
     // Generate Tiles for each Dino in Array
