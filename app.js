@@ -3,7 +3,6 @@
     const dinosData = JSON.parse( dinosJson );
 
     // Create Dino Constructor
-
     function Dino( species, weight, height, diet, where, when, fact ) {
         this.species = species;
         this.weight = weight;
@@ -14,16 +13,26 @@
         this.fact = fact;
     }
 
-    // Create Dino Objects
-
+     // Create Dino Objects
     let dinos = []
 
     dinosData.Dinos.forEach( dino => {
         dinos.push( new Dino( ...Object.values( dino ) ) );
     });
 
-    // Create random selection of Dino objects
+    // Create Human Object
+    function Human( name, height, weight, diet ) {
+        this.species = 'Human';
+        this.name = name;
+        this.height = parseInt( height, 10 );
+        this.weight = parseInt( weight, 10 );
+        this.diet = diet;
+        this.when = 'Holocene';
+        this.where = null;
+        this.fact = null;
+    }
 
+    // Create random selection of Dino objects
     function getRandomInt( min, max ) {
         min = Math.ceil( min );
         max = Math.floor( max );
@@ -66,26 +75,8 @@
 
         return selectedDinos;
     };
-
-    // Create Human Object
-
-    function Human( name, height, weight, diet ) {
-        this.species = 'human';
-        this.name = name;
-        this.height = parseInt( height, 10 );
-        this.weight = parseInt( weight, 10 );
-        this.diet = diet;
-        this.when = 'Holocene';
-        this.where = null;
-        this.fact = null;
-    }
     
     // Use IIFE to get human data from form
-
-    const form = document.getElementById( 'dino-compare' );
-
-    let humans = []
-
     const onFormSubmit = function ( event ){
         event.preventDefault();
 
@@ -98,26 +89,26 @@
 
         let humanHeight = ( parseInt( humanEntry.feet, 10)  * 12 ) + parseInt( humanEntry.inches, 10 );
 
-        let humanObject = new Human( 
+        human = new Human( 
             humanEntry.name, 
             humanHeight, 
             humanEntry.weight, 
             humanEntry.diet 
         )
-        
-        humans.push( humanObject );
 
         const pigeonData = getPigeon( dinos );
 
-        getHighestHeight( dinos, pigeonData.pigeon, humanObject );
+        insertTiles( 
+            grid, 
+            generateTiles( [
+                human, 
+                pigeonData.pigeon, 
+                ...pigeonData.dinos
+            ] ) 
+        );
 
-        console.log(pigeonData);
-
-        console.log( getRandomUniqueDinos( pigeonData.dinos, 7 ));
-        
+        removeForm( event.target );
     };
-    
-    form.addEventListener('submit', onFormSubmit)
 
     // Create Dino Compare Method - Weight
     function getHighestWeight( dinos, pigeon, human ) {
@@ -165,10 +156,58 @@
     }
 
     // Generate Tiles for each Dino in Array
-  
-        // Add tiles to DOM
+    function createTile ( item ) {
+        const tileClass = document.createAttribute( "class" );
+
+        tileClass.value = "grid-item";
+
+        const tile = document.createElement( 'div' );
+
+        tile.setAttributeNode( tileClass );
+
+        const title = document.createElement( 'h3' );
+
+        const titleContent = document.createTextNode( item.species );
+        
+        title.appendChild( titleContent );
+
+        tile.appendChild( title );
+
+        // @todo loop through data for each object
+
+        tile.appendChild ( createDataEl( "test" ) );
+
+        return tile;
+    };
+
+    function createDataEl ( data ){
+        const paragraph = document.createElement( 'p' );
+
+        const addData = document.createTextNode ( data );
+
+        paragraph.appendChild( addData );
+
+        return paragraph;
+    };
+
+    function generateTiles( items ) {
+        return items.map( createTile );
+    };
+
+    function insertTiles( insertTo, tiles ) {
+        tiles.forEach( tile => insertTo.appendChild( tile ) );
+    };
 
     // Remove form from screen
-
+    function removeForm( form ){
+        form.remove();
+    }
 
 // On button click, prepare and display infographic
+const form = document.getElementById( 'dino-compare' );
+
+const grid = document.getElementById( 'grid' );
+
+let human;
+
+form.addEventListener('submit', onFormSubmit);
