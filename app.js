@@ -11,6 +11,10 @@
         this.where = where;
         this.when = when;
         this.fact = fact;
+        this.isHeaviest = false;
+        this.isLightest = false;
+        this.isTallest = false;
+        this.isShortest = false;
     }
 
      // Create Dino Objects
@@ -30,6 +34,18 @@
         this.when = 'Holocene';
         this.where = null;
         this.fact = null;
+        this.isHeaviest = false;
+        this.isLightest = false;
+        this.isTallest = false;
+        this.isShortest = false;
+
+        if( ! this.weight ){
+            this.weight = 0;
+        }
+
+        if( ! this.height ){
+            this.height = 0;
+        }
     }
 
     // Create random selection of Dino objects
@@ -111,39 +127,77 @@
     };
 
     // Create Dino Compare Method - Weight
-    function getHighestWeight( dinos, pigeon, human ) {
-        let highestWeight = pigeon;
+    function getHighestWeight( items ) {
+        let highestWeight;
 
-        if( human.weight > highestWeight.weight ) {
-            highestWeight = human;
-        }
-        
-        dinos.forEach( ( dino ) => {
-            if( dino.weight > highestWeight.weight) {
-                highestWeight = dino;
+        items.forEach( ( item ) => {
+            if( ! highestWeight ){
+                highestWeight = item;
+
+                return;
+            }
+
+            if( item.weight > highestWeight.weight) {
+                highestWeight = item;
             }
         } ) 
 
         return highestWeight;
     };
-    
-    // Create Dino Compare Method - Height
-    function getHighestHeight( dinos, pigeon, human ) {
-        let highestHeight = pigeon;
 
-        if( human.height > highestHeight.height ) {
-            highestHeight = human;
-        }
-        
-        dinos.forEach( ( dino ) => {
-            if( dino.height > highestHeight.height) {
-                highestHeight = dino;
+    function getLightestWeight( items ) {
+        let lightestWeight;
+
+        items.forEach( ( item ) => {
+            if( ! lightestWeight ){
+                lightestWeight = item;
+
+                return;
+            }
+
+            if( item.weight < lightestWeight.weight) {
+                lightestWeight = item;
             }
         } ) 
 
-        console.log(highestHeight);
+        return lightestWeight;
+    };
+    
+    // Create Dino Compare Method - Height
+    function getTallest( items ) {
+        let tallest;
 
-        return highestHeight;
+        items.forEach( ( item ) => {
+            if( ! tallest ){
+                tallest = item;
+
+                return;
+            }
+
+            if( item.height > tallest.height) {
+                tallest = item;
+            }
+        } ) 
+
+        return tallest;
+    };
+
+    function getShortest( items ) {
+        let shortest;
+
+        items.forEach( ( item ) => {
+            if( ! shortest ){
+                shortest = item;
+
+                return;
+            }
+
+            if( item.height < shortest.height) {
+                shortest = item;
+            }
+        } ) 
+
+        return shortest;
     };
 
     // Create Dino Compare Method - Time Period
@@ -173,9 +227,31 @@
 
         tile.appendChild( title );
 
-        // @todo loop through data for each object
+        const speciesLabel = ( item.species == "Human" ? "human" : ( item.species == "Pigeon" ? "pigeon" : "dino" ) );
 
-        tile.appendChild ( createDataEl( "test" ) );
+        tile.appendChild( createDataEl( "This " + speciesLabel + " belongs to the " + item.when + " era." ) )
+
+        tile.appendChild( createDataEl( "This " + speciesLabel + " is an " + item.diet.toLowerCase() + "." ) )
+
+        tile.appendChild( createDataEl( "This " + speciesLabel + " weighs " + item.weight + " lbs." ) )
+
+        tile.appendChild( createDataEl( "This " + speciesLabel + " is " + item.height + " inches tall." ) )
+
+        if( item.isHeaviest ) {
+            tile.appendChild ( createDataEl( item.species + " is the heaviest." ) );
+        }
+
+        if ( item.isLightest ) {
+            tile.appendChild ( createDataEl( item.species + " is the lightest." ) );
+        }
+
+        if( item.isTallest ) {
+            tile.appendChild ( createDataEl( item.species + " is the tallest." ) );
+        }
+
+        if ( item.isShortest ) {
+            tile.appendChild ( createDataEl( item.species + " is the shortest." ) );
+        }
 
         return tile;
     };
@@ -191,6 +267,14 @@
     };
 
     function generateTiles( items ) {
+        getHighestWeight( items ).isHeaviest = true;
+
+        getLightestWeight( items ).isLightest = true;
+
+        getTallest( items ).isTallest = true;
+
+        getShortest( items ).isShortest = true;
+
         return items.map( createTile );
     };
 
