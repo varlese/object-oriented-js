@@ -210,6 +210,12 @@
     }
 
     // Generate Tiles for each Dino in Array
+    function getImageUrl( item ){
+        return './images/' + item.species + ".png"
+    }
+
+    //end todo 
+
     function createTile ( item ) {
         const tileClass = document.createAttribute( "class" );
 
@@ -226,6 +232,16 @@
         title.appendChild( titleContent );
 
         tile.appendChild( title );
+
+        const speciesImage = document.createElement( 'img' );
+
+        const speciesImageSrc = document.createAttribute( 'src' );
+
+        speciesImageSrc.value = getImageUrl( item );
+
+        speciesImage.setAttributeNode( speciesImageSrc );
+
+        tile.appendChild( speciesImage );
 
         const speciesLabel = ( item.species == "Human" ? "human" : ( item.species == "Pigeon" ? "pigeon" : "dino" ) );
 
@@ -253,6 +269,10 @@
             tile.appendChild ( createDataEl( item.species + " is the shortest." ) );
         }
 
+        if ( item.species == "Pigeon" ) {
+            tile.appendChild ( createDataEl( "All birds are dinosaurs." ) );
+        }
+
         return tile;
     };
 
@@ -274,6 +294,18 @@
         getTallest( items ).isTallest = true;
 
         getShortest( items ).isShortest = true;
+
+        items = items.sort(() => Math.random() - 0.5);
+
+        let human;
+
+        for( let index = 0; index < items.length; index++) {
+            if( items[index].species == "Human" ) {
+                human = items.splice( index, 1 )[0];
+            }
+        }
+
+        items.splice( Math.floor(items.length/2), 0, human );
 
         return items.map( createTile );
     };
