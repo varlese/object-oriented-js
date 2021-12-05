@@ -1,4 +1,6 @@
 (function(){
+    "use strict";
+
     // String with all dinos
    const dinosJson = '{"Dinos":[{"species":"Triceratops","weight":13000,"height":114,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"First discovered in 1889 by Othniel Charles Marsh"},{"species":"Tyrannosaurus Rex","weight":11905,"height":144,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"The largest known skull measures in at 5 feet long."},{"species":"Anklyosaurus","weight":10500,"height":55,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"Anklyosaurus survived for approximately 135 million years."},{"species":"Brachiosaurus","weight":70000,"height":"372","diet":"herbavor","where":"North America","when":"Late Jurasic","fact":"An asteroid was named 9954 Brachiosaurus in 1991."},{"species":"Stegosaurus","weight":11600,"height":79,"diet":"herbavor","where":"North America, Europe, Asia","when":"Late Jurasic to Early Cretaceous","fact":"The Stegosaurus had between 17 and 22 seperate places and flat spines."},{"species":"Elasmosaurus","weight":16000,"height":59,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Elasmosaurus was a marine reptile first discovered in Kansas."},{"species":"Pteranodon","weight":44,"height":20,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Actually a flying reptile, the Pteranodon is not a dinosaur."},{"species":"Pigeon","weight":0.5,"height":9,"diet":"herbavor","where":"World Wide","when":"Holocene","fact":"All birds are living dinosaurs."}]}';
 
@@ -11,7 +13,26 @@
             return new Dino( ...Object.values( item ) );
         });
 
-        console.log( this.items );
+        // Gets items
+        this.getItems = function( randomize, centerHuman ){
+            if( randomize ){
+                this.items = this.items.sort(() => Math.random() - 0.5);
+            }
+
+            if( centerHuman ){
+                let human;
+
+                for( let index = 0; index < this.items.length; index++) {
+                    if( this.items[index].species == "Human" ) {
+                        human = this.items.splice( index, 1 )[0];
+                    }
+                }
+
+                this.items.splice( Math.floor(this.items.length/2), 0, human );
+            }
+
+            return this.items;
+        }
 
         // Add new object to array
         this.addItem = function( item ){
@@ -25,33 +46,33 @@
             this.items.forEach( ( item ) => {
                 if( ! highestWeight ){
                     highestWeight = item;
-    
+
                     return;
                 }
-    
+
                 if( item.weight > highestWeight.weight ){
                     highestWeight = item;
                 }
-            } ) 
-    
+            } )
+
             return highestWeight;
         };
 
         this.getLightestWeight = function() {
             let lightestWeight;
-    
+
             this.items.forEach( ( item ) => {
                 if( ! lightestWeight ){
                     lightestWeight = item;
-    
+
                     return;
                 }
-    
+
                 if( item.weight < lightestWeight.weight ){
                     lightestWeight = item;
                 }
-            } ) 
-    
+            } )
+
             return lightestWeight;
         };
 
@@ -69,7 +90,7 @@
                 if( item.height > tallest.height ){
                     tallest = item;
                 }
-            } ) 
+            } )
 
             return tallest;
         };
@@ -87,16 +108,16 @@
                 if( item.height < shortest.height ){
                     shortest = item;
                 }
-            } ) 
+            } )
 
             return shortest;
         };
 
         // Get pigeon item
-        this.getPigeon = function(){   
+        this.getPigeon = function(){
             for ( let step = 0; step < this.items.length; step++ ) {
                 let dino = this.items[step];
-    
+
                 if( dino.species == "Pigeon" ){
                     return dino;
                 }
@@ -105,7 +126,7 @@
             return null;
         }
     }
-    
+
     // Create random selection of objects
     function getRandomInt( min, max ){
         min = Math.ceil( min );
@@ -122,10 +143,50 @@
         this.where = where;
         this.when = when;
         this.fact = fact;
-        this.isHeaviest = false;
-        this.isLightest = false;
-        this.isTallest = false;
-        this.isShortest = false;
+
+        // Check if dino is heaviest
+        this.isHeaviest = function(){
+            let heaviestAnimal = animals.getHighestWeight()
+
+            if( this.species == heaviestAnimal.species && this.weight == heaviestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if dino is lightest
+        this.isLightest = function(){
+            let lightestAnimal = animals.getLightestWeight()
+
+            if( this.species == lightestAnimal.species && this.weight == lightestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if dino is tallest
+        this.isTallest = function(){
+            let tallestAnimal = animals.getTallest()
+
+            if( this.species == tallestAnimal.species && this.weight == tallestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if dino is shortest
+        this.isShortest = function(){
+            let shortestAnimal = animals.getShortest()
+
+            if( this.species == shortestAnimal.species && this.weight == shortestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
 
         // Compare #3: Gets oldest and newest time period
         this.isOldestPeriod = function(){
@@ -142,7 +203,7 @@
         }
     }
 
-    // Human Constructor 
+    // Human Constructor
     function Human( name, height, weight, diet ){
         this.species = 'Human';
         this.name = name;
@@ -165,6 +226,50 @@
             this.height = 0;
         }
 
+        // Check if human is heaviest
+        this.isHeaviest = function(){
+            let heaviestAnimal = animals.getHighestWeight()
+
+            if( this.species == heaviestAnimal.species && this.weight == heaviestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if human is lightest
+        this.isLightest = function(){
+            let lightestAnimal = animals.getLightestWeight()
+
+            if( this.species == lightestAnimal.species && this.weight == lightestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if human is tallest
+        this.isTallest = function(){
+            let tallestAnimal = animals.getTallest()
+
+            if( this.species == tallestAnimal.species && this.weight == tallestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
+        // Check if human is shortest
+        this.isShortest = function(){
+            let shortestAnimal = animals.getShortest()
+
+            if( this.species == shortestAnimal.species && this.weight == shortestAnimal.weight ){
+                return true;
+            }
+
+            return false;
+        };
+
         // Compare #3: Gets oldest and newest time period
         this.isOldestPeriod = function(){
             return this.when == "Late Jurasic";
@@ -179,7 +284,7 @@
             return './images/' + this.species + ".png"
         }
     }
-    
+
     // Generate Tiles for each Dino in Array
     function createTile ( item ){
         const tileClass = document.createAttribute( "class" );
@@ -193,7 +298,7 @@
         const title = document.createElement( 'h3' );
 
         const titleContent = document.createTextNode( item.species );
-        
+
         title.appendChild( titleContent );
 
         tile.appendChild( title );
@@ -218,19 +323,19 @@
 
         tile.appendChild( createDataEl( "This " + speciesLabel + " is " + item.height + " inches tall." ) )
 
-        if( item.isHeaviest ) {
+        if( item.isHeaviest() ) {
             tile.appendChild ( createDataEl( item.species + " is the heaviest." ) );
         }
 
-        if ( item.isLightest ) {
+        if ( item.isLightest() ) {
             tile.appendChild ( createDataEl( item.species + " is the lightest." ) );
         }
 
-        if( item.isTallest ) {
+        if( item.isTallest() ) {
             tile.appendChild ( createDataEl( item.species + " is the tallest." ) );
         }
 
-        if ( item.isShortest ) {
+        if ( item.isShortest() ) {
             tile.appendChild ( createDataEl( item.species + " is the shortest." ) );
         }
 
@@ -241,7 +346,7 @@
         return tile;
     };
 
-    function createDataEl ( data ){
+    const createDataEl = function( data ){
         const paragraph = document.createElement( 'p' );
 
         const addData = document.createTextNode ( data );
@@ -251,37 +356,16 @@
         return paragraph;
     };
 
-    // @TODO move into object data
-    function generateTiles( items ) {
-        animals.getHighestWeight().isHeaviest = true;
-
-        animals.getLightestWeight().isLightest = true;
-
-        animals.getTallest().isTallest = true;
-
-        animals.getShortest().isShortest = true;
-
-        items = items.sort(() => Math.random() - 0.5);
-
-        let human;
-
-        for( let index = 0; index < items.length; index++) {
-            if( items[index].species == "Human" ) {
-                human = items.splice( index, 1 )[0];
-            }
-        }
-
-        items.splice( Math.floor(items.length/2), 0, human );
-
+    const generateTiles = function( items ) {
         return items.map( createTile );
     };
 
-    function insertTiles( insertTo, tiles ) {
+    const insertTiles = function( insertTo, tiles ) {
         tiles.forEach( tile => insertTo.appendChild( tile ) );
     };
 
     // Remove form from screen
-    function removeForm( form ){
+    const removeForm = function( form ){
         form.remove();
     }
 
@@ -298,18 +382,18 @@
 
         let humanHeight = ( parseInt( humanEntry.feet, 10)  * 12 ) + parseInt( humanEntry.inches, 10 );
 
-        human = new Human( 
-            humanEntry.name, 
-            humanHeight, 
-            humanEntry.weight, 
-            humanEntry.diet 
+        human = new Human(
+            humanEntry.name,
+            humanHeight,
+            humanEntry.weight,
+            humanEntry.diet
         )
 
         animals.addItem(human);
 
-        insertTiles( 
-            grid, 
-            generateTiles( animals.items ) 
+        insertTiles(
+            grid,
+            generateTiles( animals.getItems( true, true ) )
         );
 
         removeForm( event.target );
@@ -326,5 +410,5 @@
 
     form.addEventListener( 'submit', onFormSubmit );
 
-    return; 
+    return;
 })();
