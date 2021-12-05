@@ -1,9 +1,120 @@
-    const dinosJson = '{"Dinos":[{"species":"Triceratops","weight":13000,"height":114,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"First discovered in 1889 by Othniel Charles Marsh"},{"species":"Tyrannosaurus Rex","weight":11905,"height":144,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"The largest known skull measures in at 5 feet long."},{"species":"Anklyosaurus","weight":10500,"height":55,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"Anklyosaurus survived for approximately 135 million years."},{"species":"Brachiosaurus","weight":70000,"height":"372","diet":"herbavor","where":"North America","when":"Late Jurasic","fact":"An asteroid was named 9954 Brachiosaurus in 1991."},{"species":"Stegosaurus","weight":11600,"height":79,"diet":"herbavor","where":"North America, Europe, Asia","when":"Late Jurasic to Early Cretaceous","fact":"The Stegosaurus had between 17 and 22 seperate places and flat spines."},{"species":"Elasmosaurus","weight":16000,"height":59,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Elasmosaurus was a marine reptile first discovered in Kansas."},{"species":"Pteranodon","weight":44,"height":20,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Actually a flying reptile, the Pteranodon is not a dinosaur."},{"species":"Pigeon","weight":0.5,"height":9,"diet":"herbavor","where":"World Wide","when":"Holocene","fact":"All birds are living dinosaurs."}]}';
+(function(){
+    // String with all dinos
+   const dinosJson = '{"Dinos":[{"species":"Triceratops","weight":13000,"height":114,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"First discovered in 1889 by Othniel Charles Marsh"},{"species":"Tyrannosaurus Rex","weight":11905,"height":144,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"The largest known skull measures in at 5 feet long."},{"species":"Anklyosaurus","weight":10500,"height":55,"diet":"herbavor","where":"North America","when":"Late Cretaceous","fact":"Anklyosaurus survived for approximately 135 million years."},{"species":"Brachiosaurus","weight":70000,"height":"372","diet":"herbavor","where":"North America","when":"Late Jurasic","fact":"An asteroid was named 9954 Brachiosaurus in 1991."},{"species":"Stegosaurus","weight":11600,"height":79,"diet":"herbavor","where":"North America, Europe, Asia","when":"Late Jurasic to Early Cretaceous","fact":"The Stegosaurus had between 17 and 22 seperate places and flat spines."},{"species":"Elasmosaurus","weight":16000,"height":59,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Elasmosaurus was a marine reptile first discovered in Kansas."},{"species":"Pteranodon","weight":44,"height":20,"diet":"carnivor","where":"North America","when":"Late Cretaceous","fact":"Actually a flying reptile, the Pteranodon is not a dinosaur."},{"species":"Pigeon","weight":0.5,"height":9,"diet":"herbavor","where":"World Wide","when":"Holocene","fact":"All birds are living dinosaurs."}]}';
 
-    const dinosData = JSON.parse( dinosJson );
+   // Definition of Dinos object
+   function Animals( data ){
+        this.items = JSON.parse( data ).Dinos;
 
-    // Create Dino Constructor
-    function Dino( species, weight, height, diet, where, when, fact ) {
+        // Create Dino Objects
+        this.items = this.items.map( item => {
+            return new Dino( ...Object.values( item ) );
+        });
+
+        console.log( this.items );
+
+        // Add new object to array
+        this.addItem = function( item ){
+            this.items.push( item );
+        }
+
+        // Compare #1: Gets objects with highest and lowest weight
+        this.getHighestWeight = function(){
+            let highestWeight;
+
+            this.items.forEach( ( item ) => {
+                if( ! highestWeight ){
+                    highestWeight = item;
+    
+                    return;
+                }
+    
+                if( item.weight > highestWeight.weight ){
+                    highestWeight = item;
+                }
+            } ) 
+    
+            return highestWeight;
+        };
+
+        this.getLightestWeight = function() {
+            let lightestWeight;
+    
+            this.items.forEach( ( item ) => {
+                if( ! lightestWeight ){
+                    lightestWeight = item;
+    
+                    return;
+                }
+    
+                if( item.weight < lightestWeight.weight ){
+                    lightestWeight = item;
+                }
+            } ) 
+    
+            return lightestWeight;
+        };
+
+        // Compare #2: Gets tallest and shortest object
+        this.getTallest = function(){
+            let tallest;
+
+            this.items.forEach( ( item ) => {
+                if( ! tallest ){
+                    tallest = item;
+
+                    return;
+                }
+
+                if( item.height > tallest.height ){
+                    tallest = item;
+                }
+            } ) 
+
+            return tallest;
+        };
+
+        this.getShortest = function(){
+            let shortest;
+
+            this.items.forEach( ( item ) => {
+                if( ! shortest ){
+                    shortest = item;
+
+                    return;
+                }
+
+                if( item.height < shortest.height ){
+                    shortest = item;
+                }
+            } ) 
+
+            return shortest;
+        };
+
+        // Get pigeon item
+        this.getPigeon = function(){   
+            for ( let step = 0; step < this.items.length; step++ ) {
+                let dino = this.items[step];
+    
+                if( dino.species == "Pigeon" ){
+                    return dino;
+                }
+            }
+
+            return null;
+        }
+    }
+    
+    // Create random selection of objects
+    function getRandomInt( min, max ){
+        min = Math.ceil( min );
+        max = Math.floor( max );
+        return Math.floor( Math.random() * ( max - min ) + min);
+    }
+
+    // Dino Constructor
+    function Dino( species, weight, height, diet, where, when, fact ){
         this.species = species;
         this.weight = weight;
         this.height = height;
@@ -15,17 +126,24 @@
         this.isLightest = false;
         this.isTallest = false;
         this.isShortest = false;
+
+        // Compare #3: Gets oldest and newest time period
+        this.isOldestPeriod = function(){
+            return this.when == "Late Jurasic";
+        }
+
+        this.isNewestPeriod = function(){
+            return this.when == "Holocene";
+        }
+
+        // Construct image URL for tiles
+        this.getImageUrl = function(){
+            return './images/' + this.species + ".png"
+        }
     }
 
-     // Create Dino Objects
-    let dinos = []
-
-    dinosData.Dinos.forEach( dino => {
-        dinos.push( new Dino( ...Object.values( dino ) ) );
-    });
-
-    // Create Human Object
-    function Human( name, height, weight, diet ) {
+    // Human Constructor 
+    function Human( name, height, weight, diet ){
         this.species = 'Human';
         this.name = name;
         this.height = parseInt( height, 10 );
@@ -46,177 +164,24 @@
         if( ! this.height ){
             this.height = 0;
         }
-    }
 
-    // Create random selection of Dino objects
-    function getRandomInt( min, max ) {
-        min = Math.ceil( min );
-        max = Math.floor( max );
-        return Math.floor( Math.random() * ( max - min ) + min);
-    }
-
-    function getPigeon( dinos ) {
-        let cloneDinos = [...dinos];
-
-        for ( let step = 0; step < cloneDinos.length; step++ ) {
-            let dino = cloneDinos[step];
-
-            if( dino.species == "Pigeon") {
-                var pigeon = dino;
-
-                cloneDinos.splice( step, 1 );
-
-                break;
-            }
+        // Compare #3: Gets oldest and newest time period
+        this.isOldestPeriod = function(){
+            return this.when == "Late Jurasic";
         }
 
-        return { 
-            dinos: cloneDinos, 
-            pigeon: pigeon 
-        };
-    }
-
-    function getRandomUniqueDinos( dinos, quantity ) {
-        let selectedDinos = [];
-
-        let cloneDinos = [...dinos]; 
-
-        for (let step = 0; step < quantity; step++) {
-            let dinoIndex = getRandomInt( 0, cloneDinos.length ); 
-
-            selectedDinos.push( cloneDinos[dinoIndex] );
-
-            cloneDinos.splice( dinoIndex, 1 );
+        this.isNewestPeriod = function(){
+            return this.when == "Holocene";
         }
 
-        return selectedDinos;
-    };
-    
-    // Use IIFE to get human data from form
-    const onFormSubmit = function ( event ){
-        event.preventDefault();
-
-        const humanForm = new FormData(event.target);
-
-        let humanEntry = {};
-        humanForm.forEach(function( value, key ){
-            humanEntry[key] = value;
-        });
-
-        let humanHeight = ( parseInt( humanEntry.feet, 10)  * 12 ) + parseInt( humanEntry.inches, 10 );
-
-        human = new Human( 
-            humanEntry.name, 
-            humanHeight, 
-            humanEntry.weight, 
-            humanEntry.diet 
-        )
-
-        const pigeonData = getPigeon( dinos );
-
-        insertTiles( 
-            grid, 
-            generateTiles( [
-                human, 
-                pigeonData.pigeon, 
-                ...pigeonData.dinos
-            ] ) 
-        );
-
-        removeForm( event.target );
-    };
-
-    // Create Dino Compare Method - Weight
-    function getHighestWeight( items ) {
-        let highestWeight;
-
-        items.forEach( ( item ) => {
-            if( ! highestWeight ){
-                highestWeight = item;
-
-                return;
-            }
-
-            if( item.weight > highestWeight.weight) {
-                highestWeight = item;
-            }
-        } ) 
-
-        return highestWeight;
-    };
-
-    function getLightestWeight( items ) {
-        let lightestWeight;
-
-        items.forEach( ( item ) => {
-            if( ! lightestWeight ){
-                lightestWeight = item;
-
-                return;
-            }
-
-            if( item.weight < lightestWeight.weight) {
-                lightestWeight = item;
-            }
-        } ) 
-
-        return lightestWeight;
-    };
-    
-    // Create Dino Compare Method - Height
-    function getTallest( items ) {
-        let tallest;
-
-        items.forEach( ( item ) => {
-            if( ! tallest ){
-                tallest = item;
-
-                return;
-            }
-
-            if( item.height > tallest.height) {
-                tallest = item;
-            }
-        } ) 
-
-        return tallest;
-    };
-
-    function getShortest( items ) {
-        let shortest;
-
-        items.forEach( ( item ) => {
-            if( ! shortest ){
-                shortest = item;
-
-                return;
-            }
-
-            if( item.height < shortest.height) {
-                shortest = item;
-            }
-        } ) 
-
-        return shortest;
-    };
-
-    // Create Dino Compare Method - Time Period
-    function isOldestPeriod( item ) {
-        return item.when == "Late Jurasic";
+        // Construct image URL for tiles
+        this.getImageUrl = function(){
+            return './images/' + this.species + ".png"
+        }
     }
-
-    function isNewestPeriod( item ) {
-        return item.when == "Holocene";
-    }
-
+    
     // Generate Tiles for each Dino in Array
-    function getImageUrl( item ){
-        return './images/' + item.species + ".png"
-    }
-
-    //end todo 
-
-    function createTile ( item ) {
+    function createTile ( item ){
         const tileClass = document.createAttribute( "class" );
 
         tileClass.value = "grid-item";
@@ -237,7 +202,7 @@
 
         const speciesImageSrc = document.createAttribute( 'src' );
 
-        speciesImageSrc.value = getImageUrl( item );
+        speciesImageSrc.value = item.getImageUrl();
 
         speciesImage.setAttributeNode( speciesImageSrc );
 
@@ -269,7 +234,7 @@
             tile.appendChild ( createDataEl( item.species + " is the shortest." ) );
         }
 
-        if ( item.species == "Pigeon" ) {
+        if ( item.species == "Pigeon" ){
             tile.appendChild ( createDataEl( "All birds are dinosaurs." ) );
         }
 
@@ -286,14 +251,15 @@
         return paragraph;
     };
 
+    // @TODO move into object data
     function generateTiles( items ) {
-        getHighestWeight( items ).isHeaviest = true;
+        animals.getHighestWeight().isHeaviest = true;
 
-        getLightestWeight( items ).isLightest = true;
+        animals.getLightestWeight().isLightest = true;
 
-        getTallest( items ).isTallest = true;
+        animals.getTallest().isTallest = true;
 
-        getShortest( items ).isShortest = true;
+        animals.getShortest().isShortest = true;
 
         items = items.sort(() => Math.random() - 0.5);
 
@@ -319,11 +285,46 @@
         form.remove();
     }
 
-// On button click, prepare and display infographic
-const form = document.getElementById( 'dino-compare' );
+    // Get human data when form is submitted
+    const onFormSubmit = function ( event ){
+        event.preventDefault();
 
-const grid = document.getElementById( 'grid' );
+        const humanForm = new FormData( event.target );
 
-let human;
+        let humanEntry = {};
+        humanForm.forEach(function( value, key ){
+            humanEntry[key] = value;
+        });
 
-form.addEventListener('submit', onFormSubmit);
+        let humanHeight = ( parseInt( humanEntry.feet, 10)  * 12 ) + parseInt( humanEntry.inches, 10 );
+
+        human = new Human( 
+            humanEntry.name, 
+            humanHeight, 
+            humanEntry.weight, 
+            humanEntry.diet 
+        )
+
+        animals.addItem(human);
+
+        insertTiles( 
+            grid, 
+            generateTiles( animals.items ) 
+        );
+
+        removeForm( event.target );
+    };
+
+    // On button click, prepare and display infographic
+    const animals = new Animals( dinosJson );
+
+    const form = document.getElementById( 'dino-compare' );
+
+    const grid = document.getElementById( 'grid' );
+
+    let human;
+
+    form.addEventListener( 'submit', onFormSubmit );
+
+    return; 
+})();
